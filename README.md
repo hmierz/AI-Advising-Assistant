@@ -1,5 +1,5 @@
-# AI-Advising-Assistant
-Local Streamlit app for validating student plans and answering program FAQs. Offline, FERPA-friendly demo with CSV inputs. This is a lightweight, FERPA-friendly demo built for portfolio use that runs 100% locally.
+# AI Advising Assistant
+Local Streamlit app for validating student plans and answering FAQs regarding SLU's physical therapy program, one of their most recognized programs. POffline, FERPA-friendly demo with CSV inputs. This project is ongoing and many future improvements are planned.
 
 A local, offline advisor dashboard that:
 - Uploads a **student plan CSV** and validates it (credits, categories, prereqs/coreqs if provided).
