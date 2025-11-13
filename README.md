@@ -31,6 +31,21 @@ The app expects the following CSVs:
   Synonyms accepted: "Credit Hours", "Cr", "Area/Type/Requirement", etc.  
   Optional columns: `CourseID`, `Status` ("Planned" or "Completed"), `Days`, `Start`, `End`, `Term`
 
+## Future Development
+
+Planned enhancements include:
+
+- Student-facing version with form input instead of CSV
+- Prerequisite/corequisite enforcement using scraped catalog data
+- Department-specific advising rules engine (e.g., auto-flagging issues)
+- Integration with PDF transcript parsing or DegreeWorks exports
+- Cleaner UI with buttons, hover tips, and dynamic layout
+- Optional export to DegreeWorks or advisor-facing systems
+
+## Demo
+
+A live or video demo will be added soon.
+
 ## Running the App
 
 To launch the app locally:
