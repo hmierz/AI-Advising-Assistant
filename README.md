@@ -1,21 +1,39 @@
 # AI Advising Assistant
-Local Streamlit app for validating student plans and answering FAQs regarding SLU's physical therapy program, one of their most recognized programs. Offline, FERPA-friendly demo with CSV inputs. This project is ongoing and many future improvements are planned.
 
-A local, offline advisor dashboard that:
-- Uploads a **student plan CSV** and validates it (credits, categories, prereqs/coreqs if provided).
-- Shows **Policies** and **Contacts** from simple CSVs.
-- Provides a **sidebar FAQ Assistant** that answers common questions from `app/faq.csv` (no external APIs).
+A local Streamlit app for validating student plans and answering advising FAQs related to Saint Louis University's Physical Therapy program. This is an offline, FERPA-friendly demo using CSV inputs. The project is ongoing with plans for future improvements. It was devloped as both a passion project and a practical endeavor to increase efficency for students and staff alike.
+
+## Overview
+
+This local advisor dashboard allows users to:
+
+- Upload a student plan CSV and validate it for credit requirements, categories, and optional prerequisites/corequisites
+- Display policies and contacts from structured CSV files
+- Use a sidebar FAQ Assistant to answer common questions (no external APIs)
+- Export one-click advising notes and full plan reports
 
 ## Features
-- CSV uploads: plan, catalog, category requirements
-- Validator: missing fields, credit totals, category checks, prereqs/coreqs (if defined)
-- FAQ Assistant: instant Q&A with keyword+fuzzy matching (supports optional `Tags`)
-- Notes: one-click **Advisor Notes** export and **Full Report** export
-- Clean **pink theme** via `ui_theme.py`
 
-**CSV Specs**
-- `app/faq.csv` → columns: `Question`, `Answer`, `Tags` (optional)
-- `app/core_map_simplified.csv` → columns: `Category`, `RequiredCredits`
-- `app/policies_simplified.csv` → any columns; displayed as a table
-- `app/contacts.csv` → any columns; displayed as a table
-- **Plan CSV** (upload): must include `Credits` and `Category` (synonyms accepted: “Credit Hours”, “Cr”, “Area/Type/Requirement”, etc.). Optional: `CourseID`, `Status` (“Planned” or “Completed”), `Days`, `Start`, `End`, `Term`.
+- **CSV Uploads**: student plan, course catalog, credit categories
+- **Validation Engine**: identifies missing fields, credit totals, category mismatches, and (optionally) prereqs/coreqs
+- **FAQ Assistant**: instant Q&A with keyword and fuzzy matching based on a local `faq.csv` file
+- **Notes Export**: downloadable advising notes and full student report
+- **Custom UI**: theme implemented via `ui_theme.py`
+
+## CSV Structure
+
+The app expects the following CSVs:
+
+- `faq.csv` — Columns: `Question`, `Answer`, `Tags` (optional)
+- `core_map_simplified.csv` — Columns: `Category`, `RequiredCredits`
+- `policies_simplified.csv` — Any columns; displayed as a table
+- `contacts.csv` — Any columns; displayed as a table
+- **Student Plan Upload** — Required columns: `Credits`, `Category`  
+  Synonyms accepted: "Credit Hours", "Cr", "Area/Type/Requirement", etc.  
+  Optional columns: `CourseID`, `Status` ("Planned" or "Completed"), `Days`, `Start`, `End`, `Term`
+
+## Running the App
+
+To launch the app locally:
+
+```bash
+streamlit run streamlit_app.py
