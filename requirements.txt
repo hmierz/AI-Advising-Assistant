@@ -6,3 +6,5 @@ python-dotenv
 matplotlib or plotly
 beautifulsoup4
 tqdm
+streamlit
+pandas
