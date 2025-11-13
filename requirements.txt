@@ -1,0 +1,8 @@
+streamlit
+pandas
+numpy
+openpyxl
+python-dotenv
+matplotlib or plotly
+beautifulsoup4
+tqdm
