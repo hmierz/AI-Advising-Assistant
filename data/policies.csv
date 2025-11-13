@@ -1,0 +1,9 @@
+
+RuleID,Rule,Threshold,AppliesTo,Details
+P001,Minimum total credits,120,All,Student must have at least 120 total credits to graduate
+P002,Minimum core credits,60,Core,Student should have at least 60 core credits (sum of core category credits)
+P003,Minimum lab credits,2,Lab,At least 2 lab credits (Bio or Chem lab courses)
+P004,Minimum IP credits,2,Interprofessional,"At least 2 credits across the interprofessional education sequence (e.g., IPE 4200 & IPE 4900)"
+P005,Upper-division elective credits,6,Elective,At least 6 credits of upper-division electives
+P006,Transfer credit limit,9,All,Students beginning in Fall 2025 are limited to 9 transfer credits toward their SLU degree once enrolled
+P007,Early core completion,36,Core,Complete the Cura Personalis 1 course (CORE 1500) within the first 36 earned credits to stay on track with the Core sequence
