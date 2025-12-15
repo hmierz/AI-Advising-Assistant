@@ -4,10 +4,10 @@ import pandas as pd
 from io import StringIO
 from datetime import datetime
 from pathlib import Path
-from app import rules  # gives you rules.load_catalog, etc. if you add them later
+from app import rules  
 from app.rules import check_requirements, RULES_VERSION
 
-# ---- FAQ helpers (smarter, still no external libs) ----
+# FAQ helpers
 from typing import List, Dict, Optional, Tuple
 import re
 from difflib import SequenceMatcher
@@ -30,7 +30,7 @@ def load_faq_csv(path: Path) -> List[Dict[str, str]]:
         cols = {c.lower(): c for c in df.columns}
         qcol = cols.get("question")
         acol = cols.get("answer")
-        tcol = cols.get("tags")  # optional synonyms/keywords
+        tcol = cols.get("tags")  
         if not qcol or not acol:
             return []
         out = []
@@ -109,7 +109,7 @@ def _score_query(query: str, row: Dict[str, str]) -> float:
     all_tok  = _tokens(row.get("all_norm", ""))
     tags_tok = _tokens(row.get("tags", ""))
 
-    # Tunable weights: emphasize tags and exact overlaps
+    # Tunable weights
     w_overlap_all = 0.40
     w_overlap_tag = 0.30
     w_bigram_all  = 0.15
@@ -140,7 +140,7 @@ def faq_answer(query: str, faqs: List[Dict[str, str]], threshold: float = 0.38) 
         return best, top3
     return None, top3
 
-# ---- Robust column normalizer (safe to paste near top) ----
+# Robust column normalizer
 def normalize_plan_df(df, *, stop_on_missing=True):
     import pandas as pd
     import streamlit as st
@@ -157,12 +157,12 @@ def normalize_plan_df(df, *, stop_on_missing=True):
     df = df.copy()
     df.rename(columns=lambda c: str(c).strip(), inplace=True)
 
-    # Find columns (tolerate synonyms)
+    # Find columns
     cat_col     = _pick_col(df, "Category", ["Core Category", "Cat", "Area", "Type", "Requirement"])
     credits_col = _pick_col(df, "Credits",  ["Credit", "Credit Hours", "Hours", "Cr", "Units"])
     course_col  = _pick_col(df, "Course",   ["Course ID", "CourseID", "Course Code", "Subject+Number", "Course Title", "Course Name"])
 
-    # Friendly error if missing
+    # Error if missing
     missing = []
     if credits_col is None: missing.append("Credits (or Credit Hours/Hours/Cr/Units)")
     if cat_col is None:     missing.append("Category (or Core Category/Area/Type)")
@@ -170,7 +170,7 @@ def normalize_plan_df(df, *, stop_on_missing=True):
         st.error("Your CSV is missing required column(s): " + ", ".join(missing) + f". Found columns: {list(df.columns)}")
         st.stop()
 
-    # Standardize names only if found
+    # Standardize names
     rename_map = {}
     if credits_col and credits_col != "Credits": rename_map[credits_col] = "Credits"
     if cat_col and cat_col != "Category":        rename_map[cat_col]     = "Category"
@@ -178,15 +178,14 @@ def normalize_plan_df(df, *, stop_on_missing=True):
     if rename_map:
         df.rename(columns=rename_map, inplace=True)
 
-    # Make Credits numeric if present
+    # Make Credits numeric
     if "Credits" in df.columns:
         df["Credits"] = pd.to_numeric(df["Credits"], errors="coerce").fillna(0)
 
-    # Return df and what we resolved
+    # Return df and what was resolved
     return df, {"Category": cat_col, "Credits": credits_col, "Course": course_col}
 
-
-# Version string (shown in the sidebar)
+# Version string 
 RULES_VERSION = "0.1-simplified"
 
 BASE = Path(__file__).parent
@@ -219,7 +218,7 @@ def check_requirements(df: pd.DataFrame, program: str, catalog_year: str) -> dic
     """
     issues = []
 
-    # Normalize column names we expect
+    # Normalize column names
     cols = {c.lower(): c for c in df.columns}
     cat_col = cols.get("category")
     cr_col  = cols.get("credits")
@@ -230,7 +229,7 @@ def check_requirements(df: pd.DataFrame, program: str, catalog_year: str) -> dic
         issues.append({"type": "Missing column", "course": "(n/a)", "details": "CSV missing 'Credits' column"})
 
     if cat_col and cr_col:
-        # Row-level checks
+        # Row level checks
         for i, row in df.iterrows():
             if pd.isna(row[cat_col]) or str(row[cat_col]).strip() == "":
                 issues.append({"type": "Blank category", "course": str(row.get("Course", f"row {i+1}")), "details": "Category is empty"})
@@ -268,22 +267,24 @@ def check_requirements(df: pd.DataFrame, program: str, catalog_year: str) -> dic
             **summarize_sources()
         }
     }
-# ---- Theme (pink) ----
+
+# Theme 
 apply_theme(page_title="Advisor Assistant — Full Bundle", page_icon="💗", layout="wide")
 
-# ---- Import your rules module ----
+# Import rules
 try:
-    import rules  # uses rules.py in project root
+    import rules
 except Exception as e:
     rules = None
 
 BASE = Path(__file__).parent
 
-# Optional resources (for the Resources/Policies cards)
-CORE_MAP_PATH   = BASE / "app" / "core_map_simplified.csv"    # just shown as a table if present
+# More resources
+CORE_MAP_PATH   = BASE / "app" / "core_map_simplified.csv"    
 POLICIES_PATH   = BASE / "app" / "policies_simplified.csv"
 CONTACTS_PATH   = BASE / "app" / "contacts.csv"
-# FAQ corpus (from app/faq.csv if present, else defaults)
+
+# FAQ corpus
 FAQ_ROWS = faq_corpus(BASE)
 
 def load_csv_optional(p: Path):
@@ -296,12 +297,7 @@ core_map_df = load_csv_optional(CORE_MAP_PATH)
 policies_df = load_csv_optional(POLICIES_PATH)
 contacts_df = load_csv_optional(CONTACTS_PATH)
 
-# -----------------------------------------------------------------------------
-# Main page header and session overview
-#
-# The header introduces the app, then a session overview summarizes who is
-# logged in and the current timestamp. A tip encourages new users to toggle
-# the sample plan if they do not yet have a CSV available.
+# Header
 
 st.title("Advisor Assistant — Full Bundle")
 st.caption("Built in Streamlit • Local Demo")
@@ -315,9 +311,8 @@ with st.container():
 
 st.divider()
 
-# =======================
-#      SIDEBAR
-# =======================
+# SIDEBAR
+
 st.sidebar.title("FAQ Assistant")
 st.sidebar.caption("SLU • Doisy College")
 st.sidebar.caption("Ask things like “How do I drop a class?” or “When can I register?”")
@@ -339,7 +334,7 @@ plan_file = st.sidebar.file_uploader("Student Plan CSV", type=["csv"], key="plan
 catalog_file = st.sidebar.file_uploader("Catalog CSV (optional)", type=["csv"], key="catalog")
 req_totals_file = st.sidebar.file_uploader("Category Requirements CSV (optional)", type=["csv"], key="reqtot")
 
-# ---- FAQ Assistant (Sidebar) ----
+# FAQ Assistant (Sidebar)
 st.sidebar.markdown("---")
 st.sidebar.subheader("FAQ Assistant")
 
@@ -372,10 +367,9 @@ for msg in st.session_state.faq_chat[-6:]:
     prefix = "🧑‍💻" if msg["role"] == "user" else "🤖"
     st.sidebar.write(f"{prefix} {msg['text']}")
 
-# tiny hint
+# hint
 if not FAQ_ROWS:
     st.sidebar.caption("Add app/faq.csv with columns: Question, Answer[, Tags]")
-
 
 # Load plan_df
 plan_df = None
@@ -386,7 +380,7 @@ if plan_file is not None:
         plan_file.seek(0)
         plan_df = pd.read_csv(plan_file)
 
-# ---------- NORMALIZE & MAP COLUMNS (paste right after you load plan_df) ----------
+# NORMALIZE & MAP COLUMNS
 if plan_df is not None:
     plan_df = plan_df.copy()
     plan_df.columns = [str(c).strip() for c in plan_df.columns]
@@ -423,7 +417,7 @@ if plan_df is not None:
         if status_col is None and "Status" not in plan_df.columns:
             status_col = st.selectbox("Optional: Which column is Status?", [None] + cols, index=0)
 
-    # Apply renames for any we found/mapped
+    # Apply renames
     rename_map = {}
     if credits_col and credits_col != "Credits": rename_map[credits_col] = "Credits"
     if cat_col and cat_col != "Category":        rename_map[cat_col]     = "Category"
@@ -432,7 +426,7 @@ if plan_df is not None:
     if rename_map:
         plan_df.rename(columns=rename_map, inplace=True)
 
-    # If still missing, allow quick defaults so you can proceed
+    # If still missing, allow quick defaults
     if "Credits" not in plan_df.columns or "Category" not in plan_df.columns:
         with st.sidebar.expander("No Credits/Category in your CSV? Set quick defaults"):
             if "Credits" not in plan_df.columns:
@@ -442,7 +436,7 @@ if plan_df is not None:
                 default_cat = st.text_input("Default Category for all rows", value="Elective")
                 plan_df["Category"] = default_cat
 
-    # Final guard — if still missing after defaults, stop with a helpful message
+    # If still missing after defaults, stop with a helpful message
     missing = [c for c in ["Credits", "Category"] if c not in plan_df.columns]
     if missing:
         st.error(f"Your CSV is missing required column(s): {', '.join(missing)}. Found columns: {list(plan_df.columns)}")
@@ -450,22 +444,20 @@ if plan_df is not None:
 
     # Make Credits numeric and clean up
     plan_df["Credits"] = pd.to_numeric(plan_df["Credits"], errors="coerce").fillna(0)
-# ---------- END NORMALIZE & MAP COLUMNS ----------
+
+# END NORMALIZE & MAP COLUMNS
 
 # Ensure Status exists so later code never KeyErrors
 if plan_df is not None and "Status" not in plan_df.columns:
-    plan_df["Status"] = ""  # or "Planned" if you prefer
+    plan_df["Status"] = "" 
 
 
 if plan_df is not None:
     plan_df, resolved_cols = normalize_plan_df(plan_df, stop_on_missing=True)
-    # Optional: see what got mapped
-    # st.caption(f"Resolved → Category='{resolved_cols['Category']}', Credits='{resolved_cols['Credits']}', Course='{resolved_cols['Course']}'")
+    
 
-
-# ==== NORMALIZE COLUMNS (run only if plan_df exists) ====
+# NORMALIZE COLUMNS 
 if plan_df is not None:
-    # --- Normalize columns so we handle synonyms like "Credit Hours", "Cr", etc. ---
     def _pick_col(df, wanted, aliases=None):
         aliases = aliases or []
         lookup = {str(c).strip().lower(): c for c in df.columns}
@@ -482,7 +474,7 @@ if plan_df is not None:
     credits_col = _pick_col(plan_df, "Credits",  ["Credit", "Credit Hours", "Hours", "Cr", "Units"])
     course_col  = _pick_col(plan_df, "Course",   ["Course ID", "CourseID", "Course Code", "Subject+Number", "Course Title", "Course Name"])
 
-    # Hard-stop with a friendly message if missing
+    # Hard-stop if missing
     missing = []
     if credits_col is None: missing.append("Credits (or Credit Hours/Hours/Cr/Units)")
     if cat_col is None:     missing.append("Category (or Core Category/Area/Type)")
@@ -501,9 +493,7 @@ if plan_df is not None:
     # Ensure Credits are numeric
     plan_df["Credits"] = pd.to_numeric(plan_df["Credits"], errors="coerce").fillna(0)
 
-
-
-# Sample plan toggle (quick test)
+# Sample plan toggle
 if st.sidebar.toggle("Use sample plan", value=False):
     plan_file = StringIO(
         "CourseID,Title,Credits,Category,Days,Start,End,Term,Status\n"
@@ -519,7 +509,7 @@ if st.sidebar.toggle("Use sample plan", value=False):
         "CHEM 1085,Chem Lab,1,Lab,W,12:00,13:50,Spring 2027,Planned\n"
     )
 
-# Default catalog (if user doesn’t upload one) — minimal demo entries
+# Default catalog
 default_catalog = StringIO(
     "CourseID,Title,Credits,Category,Requires,Coreqs\n"
     "ANAT 1000,Intro Anatomy,3,Core,,\n"
@@ -535,7 +525,7 @@ default_catalog = StringIO(
     "CHEM 1085,Chem Lab,1,Lab,CHEM 1080,\n"
 )
 
-# Default req totals (if user doesn’t upload one)
+# Default req totals
 default_req_totals = StringIO(
     "Category,RequiredCredits\n"
     "Core,60\n"
@@ -544,10 +534,7 @@ default_req_totals = StringIO(
     "Elective,6\n"
 )
 
-
-# =======================
 #   LOAD/SHOW DATA
-# =======================
 
 # Catalog source
 if catalog_file is not None:
@@ -571,13 +558,7 @@ else:
     default_req_totals.seek(0)
     req_totals_df = pd.read_csv(default_req_totals)
 
-# -----------------------------------------------------------------------------
 # Dataset summary
-#
-# Show how many rows are loaded from each source. This helps the user
-# understand the size of their plan, catalog and requirement inputs, even
-# before a plan file is uploaded. Courses loaded will be zero until a
-# Student Plan CSV is uploaded or the sample plan is toggled.
 
 courses_rows = plan_df.shape[0] if plan_df is not None else 0
 catalog_rows = catalog_df.shape[0]
@@ -591,28 +572,22 @@ with st.container():
     m3.metric("Req categories", f"{req_rows}")
     m4.metric("Contacts", f"{contact_rows}")
 
-# -----------------------------------------------------------------------------
 # Plan preview & overview
-#
-# When a Student Plan CSV is loaded (or the sample plan is toggled), show a
-# preview of the first 25 rows and summarise the credit load and status
-# distribution. Otherwise, prompt the user to upload a CSV with the
-# required columns.
 
 st.divider()
 st.subheader("Plan Preview & Overview")
 
 if plan_df is not None and not plan_df.empty:
-    # Display a preview of the plan
+    # preview of the plan
     st.dataframe(plan_df.head(25), use_container_width=True)
 
-    # Summarise credits and statuses
+    # Summarize credits and statuses
     total_credits = float(pd.to_numeric(plan_df.get("Credits", 0), errors="coerce").fillna(0).sum())
     status_s = plan_df.get("Status", None)
     planned   = int((status_s == "Planned").sum())   if status_s is not None else 0
     completed = int((status_s == "Completed").sum()) if status_s is not None else 0
 
-    # Show plan metrics beneath the table
+    # Show plan metrics
     col1, col2, col3 = st.columns(3)
     col1.metric("Total credits", f"{total_credits:.1f}")
     col2.metric("Completed courses", f"{completed}")
@@ -620,14 +595,7 @@ if plan_df is not None and not plan_df.empty:
 else:
     st.info("Upload a Student Plan CSV to begin (needs at least: CourseID, Credits, Category).")
 
-# -----------------------------------------------------------------------------
 # Plan validation
-#
-# This section allows users to validate their plan against prerequisites,
-# corequisites, time conflicts and credit requirements. When no plan is
-# loaded, a helpful message is displayed. Otherwise, the user can click a
-# button to run checks. Results are displayed in a table and a summary, and
-# a downloadable advisor note is generated automatically.
 
 st.divider()
 st.subheader("Plan Validation")
@@ -640,7 +608,7 @@ else:
     if validate_clicked:
         issues: list[dict] = []
 
-        # Build catalog from DataFrame via your rules
+        # Build catalog from DataFrame via rules
         catalog: dict = {}
         if rules and hasattr(rules, "load_catalog"):
             try:
@@ -686,7 +654,7 @@ else:
             issues_df = pd.DataFrame(issues)
             st.dataframe(issues_df, use_container_width=True)
 
-            # Grouped summary (if your rules provide summarize_results)
+            # Grouped summary
             if rules and hasattr(rules, "summarize_results"):
                 try:
                     buckets = rules.summarize_results(issues)
@@ -706,7 +674,7 @@ else:
         else:
             st.success("All checks passed! Your student plan meets credit and category rules.")
 
-        # Compose an advisor note summarising the validation outcome
+        # Compose an advisor note summarizing the validation outcome
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
         note_lines: list[str] = [
             f"Advisor Assistant validation note ({timestamp})",
@@ -724,7 +692,7 @@ else:
         # Store validation notes in session state for later export
         st.session_state["validation_notes"] = notes_text
 
-        # Provide download button for advisor note
+        # Download button for advisor note
         st.download_button(
             label="Download advisor note (.txt)",
             data=notes_text.encode("utf-8"),
@@ -732,18 +700,12 @@ else:
             mime="text/plain",
         )
 
-# -----------------------------------------------------------------------------
 # Notes & export
-#
-# This section provides a persistent text area for advisor notes and
-# consolidated export options. Notes are saved in ``st.session_state``
-# so they persist across reruns. Users can download their notes alone or
-# a full report that includes validation notes and advisor notes.
 
 st.divider()
 st.subheader("Advisor Notes & Export")
 
-# Text area for advisor notes; persists across reruns
+# Text area for advisor notes
 notes_input = st.text_area(
     "Advisor notes",
     value=st.session_state.get("advisor_notes", ""),
@@ -779,12 +741,7 @@ if full_report_parts:
 else:
     st.info("No notes or validation results to export yet.")
 
-# -----------------------------------------------------------------------------
 # Additional information
-#
-# Policies, contacts and other resources are presented in expanders to
-# declutter the main interface. Users can open the sections they need
-# without being overwhelmed by large tables.
 
 st.divider()
 st.subheader("Additional Information")
@@ -808,5 +765,5 @@ with st.expander("Additional Support"):
     st.write(f"This application includes **{total_contacts}** contacts for further assistance.")
 
 # Footer
-st.caption("© 2025 Advisor Assistant | SLU Doisy College")
+st.caption("© 2025 Advisor Assistant | Haley Mierzejewski")
 
