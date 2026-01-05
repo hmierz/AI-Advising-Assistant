@@ -1,71 +1,111 @@
 # AI Advising Assistant
 
-AI Advising Assistant is a local, offline Streamlit dashboard for reviewing student plans and answering advising FAQs related to Saint Louis University's Physical Therapy program. The app is designed to be FERPA-compliant, using only CSV inputs without sending any data to external servers.
+A local, offline Streamlit dashboard for reviewing student course plans and answering advising FAQs for Saint Louis University's Physical Therapy program. Built FERPA-compliant with no external API calls—all processing happens on your machine.
 
-This project includes a student plan validator, a table viewer for policies and contacts, and an AI-style FAQ assistant. It is a lightweight prototype for advisor-facing automation.
+## What It Does
 
-## AI FAQ Assistant
+**Plan Validator** – Upload a student's course plan CSV to check for:
+- Missing required fields (credits, categories)
+- Duplicate or incomplete entries
+- Total credit hours by category
+- Prerequisites and corequisites (if included in your catalog)
 
-The sidebar includes an FAQ Assistant that uses local keyword and fuzzy matching to answer common advising questions. It reads from `faq.csv` and requires no API calls.
+**FAQ Assistant** – Local keyword and fuzzy matching against a CSV of common questions. No GPT, no API costs, no data leaving your computer. Ask things like:
+- "When should I take anatomy?"
+- "How do I study abroad?"
+- "Who clears my advising hold?"
 
-You can ask questions such as:
-- When should I take anatomy?
-- How do I study abroad?
+**Policy & Contact Tables** – Quick reference for program policies and department contacts, loaded from CSV.
 
-The assistant searches based on exact words and tags, then returns the best matching answer from the file. This is designed to mimic chatbot functionality in an offline environment.
+## Why This Approach
 
-## Plan Validator
+- **FERPA-safe**: Student data never touches external servers
+- **No API costs**: Fuzzy matching instead of LLM calls keeps it free
+- **Advisor-facing**: Built for staff who work with multiple students per day
+- **Lightweight**: Runs on any laptop, no cloud setup required
 
-Users can upload a student course plan as a CSV file. The app will:
-- Validate required fields such as credit hours and category
-- Flag missing or duplicate entries
-- Sum total credits by category
-- Optionally check for prerequisites and corequisites if included
+## Tech Stack
 
-## Other Features
+- **Frontend**: Streamlit
+- **Data Processing**: Pandas
+- **Search**: FuzzyWuzzy/SequenceMatcher (Python stdlib)
+- **Storage**: Local CSV files
 
-- CSV uploads for student plan, core map, policies, and contacts
-- One-click export for Advisor Notes or full session report
-- Custom UI styling applied via `ui_theme.py` with soft pink tones
+## Installation
+```bash
+# Clone the repo
+git clone https://github.com/hmierz/AI-Advising-Assistant.git
+cd AI-Advising-Assistant
+
+# Create virtual environment (recommended)
+python -m venv advisor-env
+source advisor-env/bin/activate  # On Windows: advisor-env\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the app
+streamlit run streamlit_app.py
+```
+
+Open your browser to `http://localhost:8501` and you're ready to go.
 
 ## CSV File Structure
 
-These are the expected files and required columns:
+The app expects these files in the `app/` folder:
 
-- `faq.csv`: Question, Answer, Tags (optional)
-- `core_map_simplified.csv`: Category, RequiredCredits
-- `policies_simplified.csv`: Any columns; displayed as-is
-- `contacts.csv`: Any columns; displayed as-is
-- Student Plan upload: Requires Credits and Category fields (aliases accepted: Credit Hours, Cr, Area, Type, Requirement, etc.)
+| File | Required Columns | Optional Columns | Purpose |
+|------|-----------------|------------------|---------|
+| `faq.csv` | Question, Answer | Tags | Powers the FAQ search |
+| `core_map_simplified.csv` | Category, RequiredCredits | - | Validates credit totals by category |
+| `policies_simplified.csv` | Any columns | - | Displays policy reference table |
+| `contacts.csv` | Any columns | - | Displays contact information |
 
-Optional student plan columns: CourseID, Status (Planned or Completed), Days, Start, End, Term
+**Student Plan Upload** (user-provided):
+- **Required**: `Credits`, `Category`
+- **Optional**: `CourseID`, `Status` (Planned/Completed), `Days`, `Start`, `End`, `Term`
+- The app auto-detects common aliases like "Credit Hours", "Cr", "Area", "Type", etc.
 
-## Future Development
+Sample data is generated automatically if you don't have CSVs ready.
 
-Planned features include:
-- A student-facing version with form input instead of CSV
-- Prerequisite/corequisite logic based on scraped catalog data
-- Rule-based engine to flag program-specific advising issues
-- Transcript parsing from PDF or DegreeWorks export
-- Enhanced UI with buttons, tooltips, and layout improvements
-- Export capability for integration with advisor systems
+## Features in Action
 
-## Demo
+**Column Auto-Detection**: Handles variations like "Credit Hours" vs "Cr" vs "Units"—just upload your CSV and the app figures it out.
 
-A live or recorded demo will be added soon.
+**Flexible Validation**: Checks credit totals, flags missing data, and optionally validates prerequisites if your catalog includes them.
 
-## Local Setup Instructions
+**Export Options**: Download validation results as CSV or generate an advisor note as TXT for student files.
 
-1. Clone this repository or download it as a ZIP
-2. Create a virtual environment  
-   `python -m venv advisor-env`
-3. Activate the environment  
-   `advisor-env\Scripts\activate`
-4. Install dependencies  
-   `pip install -r requirements.txt`
-5. Launch the app  
-   `streamlit run streamlit_app.py`
+**Session Memory**: FAQ chat history and validation notes persist during your session for easy reference.
+
+## Future Plans
+
+- [ ] Student-facing version with form input instead of CSV upload
+- [ ] Scrape SLU course catalog for automated prerequisite/corequisite detection
+- [ ] Rule engine for program-specific advising checks (e.g., "must take X before Y")
+- [ ] PDF transcript parsing from DegreeWorks
+- [ ] Multi-program support beyond PT (OT, AT, Nutrition)
+- [ ] Deploy to Streamlit Cloud for web access
+
+## Screenshots
+
+*Coming soon—building a quick screen recording of the interface*
+
+## Local Setup Troubleshooting
+
+**Can't find my columns**: The app looks for common aliases, but if yours are unusual, use the sidebar column mapper.
+
+**FAQ not working**: Make sure `app/faq.csv` exists with at least `Question` and `Answer` columns. The app falls back to hardcoded examples if the file is missing.
+
+**Validation errors**: Double-check that your student plan CSV has numeric values in the Credits column and that Category isn't blank.
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+MIT License - see `LICENSE` file for details.
+
+## Contact
+
+Haley Mierz  
+[GitHub](https://github.com/hmierz) • [LinkedIn](https://linkedin.com/in/haley-mierz)
+
+Built to assist me in my current job as an academic advisor at Saint Louis University.
