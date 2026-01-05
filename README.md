@@ -2,6 +2,20 @@
 
 A local, offline Streamlit dashboard for reviewing student course plans and answering advising FAQs for Saint Louis University's Physical Therapy program. Built FERPA-compliant with no external API calls—all processing happens on your machine.
 
+## Screenshots
+
+### Main Dashboard
+![Main Dashboard](Advisor_Assistant_Screenshot.png)
+*Dashboard showing session overview, file uploads, and FAQ assistant*
+
+### Plan Validation
+![Validation Results](Advisor_Assistant_Validation_Screenshot.png)
+*Course plan table with automated validation and export options*
+
+### Policies & Contacts
+![Policies and Contacts](Advisor_Assistant_Policies_Contacts_Screenshot.png)
+*Quick reference tables for university policies and department contacts*
+
 ## What It Does
 
 **Plan Validator** – Upload a student's course plan CSV to check for:
@@ -37,18 +51,23 @@ A local, offline Streamlit dashboard for reviewing student course plans and answ
 git clone https://github.com/hmierz/AI-Advising-Assistant.git
 cd AI-Advising-Assistant
 
-# Create virtual environment (recommended)
+# Create virtual environment
 python -m venv advisor-env
-source advisor-env/bin/activate  # On Windows: advisor-env\Scripts\activate
+
+# Activate environment
+advisor-env\Scripts\activate  # Windows
+source advisor-env/bin/activate  # Mac/Linux
 
 # Install dependencies
-pip install -r requirements.txt
+pip install streamlit pandas
 
 # Run the app
 streamlit run streamlit_app.py
 ```
 
 Open your browser to `http://localhost:8501` and you're ready to go.
+
+**Detailed setup instructions**: See [SETUP.md](SETUP.md)
 
 ## CSV File Structure
 
@@ -78,6 +97,26 @@ Sample data is generated automatically if you don't have CSVs ready.
 
 **Session Memory**: FAQ chat history and validation notes persist during your session for easy reference.
 
+## Current Limitations & Future Work
+
+This is a proof-of-concept built as part of my analytics portfolio. It demonstrates:
+- FERPA-compliant data handling
+- Offline NLP techniques (fuzzy matching)
+- CSV-based workflow automation
+- User interface design with Streamlit
+
+**Known limitations:**
+- FAQ matching works best for exact phrasing; needs better synonym handling
+- Validation logic is basic; production would need program-specific rules
+- Currently single-program focused (PT); needs multi-program architecture
+
+**Next steps for production readiness:**
+- Integrate with SLU's course catalog API for real-time prerequisite checking
+- Add more sophisticated NLP (embedding-based semantic search)
+- Build out program-specific validation rules engine
+- Add user authentication and session persistence
+- Create advisor dashboard with aggregate metrics across students
+
 ## Future Plans
 
 - [ ] Student-facing version with form input instead of CSV upload
@@ -87,25 +126,13 @@ Sample data is generated automatically if you don't have CSVs ready.
 - [ ] Multi-program support beyond PT (OT, AT, Nutrition)
 - [ ] Deploy to Streamlit Cloud for web access
 
-## Screenshots
-
-*Coming soon—building a quick screen recording of the interface*
-
-## Local Setup Troubleshooting
-
-**Can't find my columns**: The app looks for common aliases, but if yours are unusual, use the sidebar column mapper.
-
-**FAQ not working**: Make sure `app/faq.csv` exists with at least `Question` and `Answer` columns. The app falls back to hardcoded examples if the file is missing.
-
-**Validation errors**: Double-check that your student plan CSV has numeric values in the Credits column and that Category isn't blank.
-
 ## License
 
 MIT License - see `LICENSE` file for details.
 
 ## Contact
 
-Haley Mierz  
+Haley Mierzejewski
 [GitHub](https://github.com/hmierz) • [LinkedIn](https://linkedin.com/in/haley-mierz)
 
-Built to assist me in my current job as an academic advisor at Saint Louis University.
+Built as as a personal assistant to my role as an academic advisor at Saint Louis University.
