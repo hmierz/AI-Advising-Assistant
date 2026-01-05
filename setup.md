@@ -6,99 +6,98 @@ Step-by-step instructions for running the AI Advising Assistant locally.
 
 - Python 3.8 or higher
 - pip (comes with Python)
-- Terminal/Command Prompt access
+- Command Prompt or Git Bash access
 
 ## Installation
 
 ### 1. Clone the Repository
+
+Open Command Prompt and run:
 ```bash
 git clone https://github.com/hmierz/AI-Advising-Assistant.git
 cd AI-Advising-Assistant
 ```
 
 ### 2. Create Virtual Environment
-
-**On macOS/Linux:**
 ```bash
-python3 -m venv advisor-env
-source advisor-env/bin/activate
+python -m venv advisor-env
 ```
+
+### 3. Activate Virtual Environment
 
 **On Windows (Command Prompt):**
 ```bash
-python -m venv advisor-env
 advisor-env\Scripts\activate
 ```
 
 **On Windows (PowerShell):**
 ```bash
-python -m venv advisor-env
 advisor-env\Scripts\Activate.ps1
 ```
 
-You should see `(advisor-env)` in your terminal prompt when activated.
-
-### 3. Install Dependencies
+**On macOS/Linux:**
 ```bash
-pip install -r requirements.txt
+source advisor-env/bin/activate
 ```
 
-This installs Streamlit, Pandas, and other required packages.
+You should see `(advisor-env)` appear in your terminal prompt.
 
-### 4. Verify Installation
+### 4. Install Dependencies
 ```bash
-streamlit --version
+pip install streamlit pandas
 ```
 
-Should output something like: `Streamlit, version 1.28.0`
+That's it - just two packages needed!
 
-## Running the App
-
-### Start the Dashboard
+### 5. Run the Application
 ```bash
 streamlit run streamlit_app.py
 ```
 
-The terminal will show:
+The app will automatically open in your browser at `http://localhost:8501`
+
+## Quick Start After First Setup
+
+Once installed, you only need these steps:
+```bash
+# Navigate to project folder
+cd AI-Advising-Assistant
+
+# Activate environment
+advisor-env\Scripts\activate
+
+# Run app
+streamlit run streamlit_app.py
 ```
-You can now view your Streamlit app in your browser.
-
-Local URL: http://localhost:8501
-Network URL: http://192.168.x.x:8501
-```
-
-### Open in Browser
-
-Navigate to `http://localhost:8501` in your web browser (Chrome, Firefox, Safari, etc.)
-
-### Stop the App
-
-Press `Ctrl+C` in the terminal where Streamlit is running.
 
 ## Common Issues
 
-### "python3: command not found"
-
-Try `python` instead of `python3`:
-```bash
-python -m venv advisor-env
-```
-
 ### "streamlit: command not found"
 
-Your virtual environment might not be activated. Look for `(advisor-env)` in your prompt. If missing:
+Make sure your virtual environment is activated. Look for `(advisor-env)` in your prompt.
 ```bash
 # Reactivate it
-source advisor-env/bin/activate  # macOS/Linux
-advisor-env\Scripts\activate      # Windows
+advisor-env\Scripts\activate  # Windows
+source advisor-env/bin/activate  # Mac/Linux
 ```
 
-### "ModuleNotFoundError: No module named 'streamlit'"
+### "File does not exist: streamlit_app.py"
 
-Make sure you're in the virtual environment and run:
+You're not in the correct folder. Navigate to the project directory:
 ```bash
-pip install -r requirements.txt
+cd AI-Advising-Assistant
 ```
+
+Then check if you're in the right place:
+```bash
+# Windows
+dir
+
+# Mac/Linux
+ls
+```
+
+You should see `streamlit_app.py` in the list.
 
 ### Port 8501 Already in Use
 
@@ -109,44 +108,55 @@ streamlit run streamlit_app.py --server.port 8502
 
 Then navigate to `http://localhost:8502`
 
-### CSV Files Not Found
-
-The app creates sample data automatically. If you want to add your own:
-1. Create `app/` folder if it doesn't exist
-2. Add these files:
-   - `faq.csv` (Question, Answer, Tags columns)
-   - `core_map_simplified.csv` (Category, RequiredCredits)
-   - `policies_simplified.csv` (any columns)
-   - `contacts.csv` (any columns)
-
-### Permission Denied (Windows)
+### Permission Denied (Windows PowerShell)
 
 If you get "Execution Policy" errors on Windows PowerShell:
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-## Using Your Own Data
+Or use Command Prompt instead of PowerShell.
 
-### Student Plan CSV
+### Python Version Issues
 
-Upload via the sidebar. Required columns:
+This app requires Python 3.8+. Check your version:
+```bash
+python --version
+```
+
+If you have an older version, download the latest from [python.org](https://www.python.org/downloads/)
+
+## Using the App
+
+### Try the Sample Data
+
+1. In the sidebar, toggle "Use sample plan" to ON
+2. Click "Validate schedule" to see validation in action
+3. Type questions in the FAQ box like "when can I register?" or "how do I drop a class?"
+
+### Upload Your Own Data
+
+Upload a CSV with these required columns:
 - `Credits` (or aliases: Credit Hours, Cr, Hours, Units)
 - `Category` (or aliases: Core Category, Area, Type, Requirement)
 
 Optional columns:
-- `Course` (CourseID, Course Code)
-- `Status` (Planned, Completed)
-- `Days`, `Start`, `End`, `Term`
+- `Course`, `Status`, `Days`, `Start`, `End`, `Term`
 
-### FAQ CSV
+The app auto-detects common column name variations!
 
-Create `app/faq.csv`:
+### FAQ Data
+
+The app includes default FAQs, but you can customize by creating `app/faq.csv`:
 ```csv
 Question,Answer,Tags
 How do I register?,Go to Banner Self Service,registration
 When is add/drop deadline?,Check academic calendar,deadline
 ```
+
+## Stopping the App
+
+Press `Ctrl+C` in the terminal where Streamlit is running.
 
 ## Deactivating Virtual Environment
 
@@ -158,12 +168,13 @@ deactivate
 ## Uninstalling
 ```bash
 # Remove virtual environment
-rm -rf advisor-env  # macOS/Linux
 rmdir /s advisor-env  # Windows
+rm -rf advisor-env     # Mac/Linux
 
-# Remove the cloned repo
+# Remove the cloned repo (optional)
 cd ..
-rm -rf AI-Advising-Assistant
+rmdir /s AI-Advising-Assistant  # Windows
+rm -rf AI-Advising-Assistant     # Mac/Linux
 ```
 
 ## Getting Help
@@ -171,28 +182,17 @@ rm -rf AI-Advising-Assistant
 - Check the [README](README.md) for feature documentation
 - Open an issue on GitHub if you find bugs
 - Review Streamlit docs: https://docs.streamlit.io/
+
+## Project Structure
 ```
-
-### 3. LICENSE file
+AI-Advising-Assistant/
+├── app/                      # Data files
+│   ├── faq.csv
+│   ├── core_map_simplified.csv
+│   ├── policies_simplified.csv
+│   └── contacts.csv
+├── streamlit_app.py          # Main application
+├── ui_theme.py               # UI styling
+├── requirements.txt          # Python dependencies
+└── README.md                 # Documentation
 ```
-MIT License
-
-Copyright (c) 2025 Haley Mierzejewski
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
