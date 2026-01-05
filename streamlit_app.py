@@ -279,7 +279,7 @@ if ask and faq_q.strip():
         st.sidebar.success("Found a match")
         st.sidebar.write(f"**Answer:** {hit['a']}")
         st.session_state.faq_chat.append({"role": "bot", "text": hit["a"]})
-        st.sidebar.caption(f"Matched FAQ: "{hit['q']}"")
+        st.sidebar.caption(f"Matched FAQ: '{hit['q']}'")
     else:
         st.sidebar.warning("No exact match. Did you mean:")
         for row, score in top3:
