@@ -251,7 +251,7 @@ st.divider()
 
 st.sidebar.title("FAQ Assistant")
 st.sidebar.caption("SLU • Doisy College")
-st.sidebar.caption("Ask questions like "How do I drop a class?" or "When can I register?"")
+st.sidebar.caption("Ask questions like 'How do I drop a class?' or 'When can I register?'")
 
 program = st.sidebar.selectbox("Program", ["Physical Therapy", "Occupational Therapy", "Athletic Training", "Nutrition & Dietetics", "Other"], index=0)
 catalog_year = st.sidebar.selectbox("Catalog Year", ["2025-2026", "2024-2025", "2023-2024", "Other"], index=0)
